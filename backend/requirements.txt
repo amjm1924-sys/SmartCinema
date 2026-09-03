@@ -1,0 +1,23 @@
+# CinemaStream Backend Dependencies
+
+# Web Framework
+Flask>=3.0.0
+flask-cors>=4.0.0
+
+# TMDb API Client
+tmdbv3api>=1.9.0
+
+# System Utilities
+psutil>=5.9.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# HTTP Requests
+requests>=2.31.0
+
+# Video Processing
+ffmpeg-python>=0.2.0
+
+# Trailer Downloading
+yt-dlp>=2023.10.13

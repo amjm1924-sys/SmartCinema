@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: smartcinema-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - backend-data:/app/data
+      # Mount your host media folder below:
+      # - /path/to/your/movies:/media:ro
+    environment:
+      - PORT=5000
+      - CORS_ORIGINS=*
+
+volumes:
+  backend-data:

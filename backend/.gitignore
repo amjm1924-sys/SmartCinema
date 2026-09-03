@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Databases & local data
+*.db
+*.sqlite
+data/
+cache/
+logs/
+
+# Testing & Linting
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+*.txt
+!requirements.txt
+
+# Environment variables
+.env
+.env.local
