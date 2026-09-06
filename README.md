@@ -1,133 +1,224 @@
-# 🎬 SmartCinema - Personal Media Streaming Server
+<p align="center">
+  <img src="frontend/public/logo.svg" width="80" alt="SmartCinema"/>
+</p>
 
-SmartCinema هو تطبيق وسائط متكامل وبث أفلام ومسلسلات (Full-Stack Streaming Platform) يتيح لك إدارة مكتبتك الرقمية، جلب بيانات وتصنيفات TMDb، استخراج الترجمات، البث المباشر بدقة متعددة (HLS)، وتوليد اقتراحات ذكية عبر الذكاء الاصطناعي (AI Recommendations).
+<h1 align="center">SmartCinema</h1>
+
+<p align="center">
+  Self-hosted media server with AI-powered discovery, adaptive streaming, and a Netflix-grade interface — built to run entirely on your own hardware.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Frontend-React_18_%2B_TypeScript-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/Backend-Python_Flask-green?style=flat-square" />
+  <img src="https://img.shields.io/badge/Streaming-HLS_%2B_GPU_Accelerated-orange?style=flat-square" />
+  <img src="https://img.shields.io/badge/AI-Ollama_%2F_Cloud_Hybrid-purple?style=flat-square" />
+  <img src="https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square" />
+</p>
 
 ---
 
-## 🏗️ هيكلية المشروع (Architecture)
+## What is SmartCinema?
 
-- **الواجهة الأمامية (Frontend):**
-  - React 18 + TypeScript + Vite + Tailwind CSS + Radix UI + Lucide Icons.
-  - دعم كامل للـ PWA (Progressive Web App).
-  - مشغل فيديو مخصص HLS يدعم الترجمات والتنقل والـ Mini-player.
-  
-- **الخادم وقاعدة البيانات (Backend):**
-  - Python Flask RESTful API.
-  - قاعدة بيانات SQLite مدمجة وسريعة.
-  - تكامل مع FFmpeg لمعالجة الفيديو وتوليد الإطارات (Thumbnails) والتحويل الفوري (HLS Transcoding).
-  - دعم الذكاء الاصطناعي عبر Ollama محلياً أو APIs خارجية.
+SmartCinema turns any PC or server into a personal streaming platform. Point it at your media folders and it handles the rest — scanning, organizing, fetching metadata and posters from TMDb, transcoding on-the-fly for any device, and serving everything through a clean web UI that works on phones, tablets, smart TVs, and desktops.
+
+It's not just a media player. It's a full media management stack with built-in AI features, a subtitle studio, intro detection, analytics, multi-user profiles, and a whole lot more.
 
 ---
 
-## 🚀 التشغيل المحلي السريع (Quick Local Setup)
+## Core Features
 
-### 1. المتطلبات المسبقة (Prerequisites)
-- [Node.js](https://nodejs.org/) (إصدار 18 أو أحدث)
-- [Python](https://www.python.org/) (إصدار 3.10 أو أحدث)
-- [FFmpeg](https://ffmpeg.org/) (مثبت ومضاف إلى مسار النظام PATH)
+### Media Library & Scanner
+- Automatic folder scanning with smart detection — distinguishes movies from TV series by analyzing folder structures, filenames, and TMDb lookups.
+- Arabic filename support with ordinal translation (الموسم الأول → Season 1).
+- Aggressive tag cleaning — strips tracker watermarks, release group tags, quality strings, and piracy site branding from titles automatically.
+- Orphan adoption — when files move between drives or get renamed, the scanner reconnects them without losing your watch history, ratings, or favorites.
+- Broken link pruning and ghost series cleanup.
 
-### 2. التثبيت (Installation)
+### Streaming & Playback
+- **Direct streaming** via HTTP Range requests for natively compatible formats.
+- **Adaptive HLS transcoding** with automatic quality switching (1080p / 720p / 480p / 360p) when the source format isn't browser-friendly.
+- **Hardware acceleration** — auto-detects NVIDIA NVENC, Intel QuickSync, AMD AMF, or falls back to optimized CPU encoding.
+- **HEVC/H.265 pass-through** using fragmented MP4 with `hvc1` tags for Safari and modern Edge.
+- Timeline hover previews generated at 10-second intervals using parallel FFmpeg workers.
+
+### Video Player
+The player is a standalone feature in itself:
+- Double-tap seek (±10s), mouse wheel volume, full keyboard shortcuts.
+- **Subtitle engine** — embedded track extraction, OpenSubtitles search & download, delay sync, custom styling (font, size, color, opacity, position), preset profiles (Netflix Style, Cinema Yellow, Classic TV), and permanent hardsub burning.
+- **Audio management** — real-time track switching for multilingual dubs, and a strip tool to remove unwanted audio tracks from the file directly.
+- Video filters — brightness, contrast, saturation sliders with auto-enhance.
+- Skip Intro button powered by audio fingerprint matching.
+- Auto Next Episode with countdown overlay.
+- Picture-in-Picture support, playback speed control (0.5x–2x).
+
+### AI Engine
+SmartCinema ships with a hybrid AI stack that works both offline and online:
+- **Local-first**: Connects to a local Ollama instance (Llama 3.2, Qwen 2.5, Mistral, etc.) for zero-cost, zero-latency, fully private AI.
+- **Cloud failover**: Automatically rotates through Gemini, Groq, OpenRouter, Together AI, and HuggingFace when Ollama isn't available, with health monitoring and dead-key detection.
+- **CineMind chatbot** — a conversational assistant that understands your library. Ask it things like "أفلام رعب في الغابات من التسعينات" and it returns matching titles with posters and availability badges.
+- **Natural language search** — converts plain Arabic or English queries into structured filters.
+- **AI recommendations** — hybrid TF-IDF cosine similarity on local metadata + TMDb global suggestions.
+- **Catchup summaries** — spoiler-free recaps of where you left off in a series.
+- **AI playlist generator** — describe a mood or theme and it builds a playlist from your library.
+
+### Intro Detection
+An audio fingerprinting system that doesn't rely on any external database:
+- Extracts audio energy profiles from episodes of the same season.
+- Builds a cosine similarity matrix and detects matching diagonal runs.
+- Saves precise intro start/end timestamps, enabling the "Skip Intro" button in the player.
+
+### Trailers
+- Background download queue using yt-dlp with multi-browser cookie fallback.
+- **Self-healing** — when a YouTube link dies or gets geo-blocked, the system automatically queries TMDb for an alternative and retries.
+- Local trailer serving from cache.
+
+### Subtitles
+- OpenSubtitles API integration with JWT authentication.
+- Search by IMDb ID, TMDb ID, or structured series queries.
+- Balanced multilingual results (Arabic + English interleaved by popularity).
+- Auto-conversion to WebVTT for browser compatibility.
+- One-click merge into MKV/MP4 containers.
+- Automatic subtitle scheduling on scan completion.
+
+### Multi-User Profiles
+- Individual watch history, favorites, and ratings per profile.
+- Custom avatar with color palette or image upload.
+- Per-profile audio language and subtitle preferences.
+- **Zero-touch LAN login** — bind profiles to device IPs so your TV, phone, and tablet each auto-login to the right profile.
+
+### Collections & Discovery
+- Curated movie sagas with chronological timeline view (Harry Potter, Marvel, John Wick, etc.).
+- Smart AI collections — trending, top rated, decade-based groupings.
+- Interactive franchise timeline showing story order vs release order with library availability badges.
+- Release calendar tracking upcoming episodes for series in your library.
+
+### Analytics
+- Total watch hours, bandwidth consumed, session counts.
+- Watch trends by day/week/month.
+- Genre distribution charts.
+- Decade comparison (movies vs series).
+- Quality breakdown across your library.
+- Most-watched actors leaderboard.
+
+### Admin & Toolbox
+- Real-time scanner terminal with SSE log streaming and progress bars.
+- Library path manager with per-path lock/unlock.
+- **Audio converter** — batch EAC3/AC3/DTS/TrueHD → AAC conversion with up to 50 parallel workers, video stream untouched.
+- **File renamer** — bulk rename proposals following Plex/Kodi/Jellyfin naming conventions.
+- **Backup service** — automated daily RoboCopy mirroring to secondary drives.
+- **System health dashboard** — disk usage, internet status, FFmpeg check, CPU/RAM utilization, corrupted file detection.
+- **Media inspector** — forensic view of SQLite records, file paths, codec info, and cached images.
+- **Unit test runner** — run backend tests directly from the browser.
+- **Theme engine** — dozens of themes across categories (Dark, OLED, Cinema, Retro, Nature, Luxury, Light).
+
+### IPTV
+- M3U playlist integration with category filtering and channel search.
+- Direct HLS live stream playback with low-latency buffering.
+
+---
+
+## Tech Stack
+
+| Layer | Technologies |
+|-------|-------------|
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, Radix UI, Hls.js, TanStack Query, Framer Motion |
+| Backend | Python 3.10+, Flask, SQLite (WAL mode), FFmpeg/FFprobe pipeline |
+| AI | Ollama (local), Gemini, Groq, OpenRouter, Together AI, HuggingFace (cloud) |
+| Streaming | HLS adaptive bitrate, HTTP Range, NVENC / QSV / AMF hardware encoding |
+| Tools | yt-dlp, RoboCopy, OpenSubtitles API |
+
+---
+
+## Getting Started
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) 18+
+- [Python](https://www.python.org/) 3.10+
+- [FFmpeg](https://ffmpeg.org/) installed and on PATH
+
+### Installation
 
 ```bash
-# 1. تثبيت اعتماديات الواجهة
+# Frontend
 cd frontend
 npm install
 
-# 2. تثبيت اعتماديات الباكيند
+# Backend
 cd ../backend
 pip install -r requirements.txt
 ```
 
-### 3. التشغيل (Running)
-- **على Windows:** يمكنك النقر مرتين على ملف `start.cmd` لتشغيل السيرفر والواجهة معاً.
-- **أو يدوياً:**
-  ```bash
-  # تشغيل الباكيند (Port 5000)
-  cd backend && python app.py
+### Run
 
-  # تشغيل الواجهة في نافذة أخرى (Port 8080)
-  cd frontend && npm run dev
-  ```
+**Windows** — double-click `start.cmd`.
 
----
-
-## 🐙 كيفية رفع المشروع على GitHub (Step-by-Step)
-
-المجلد مهيأ بالكامل بملفات `.gitignore` الصحيحة التي تمنع رفع ملفات الـ `node_modules` والـ Cache والملفات المؤقتة.
-
-نفذ الأوامر التالية من داخل المجلد الرئيسي:
-
+**Manual:**
 ```bash
-# 1. تهيئة مستودع Git
-git init
+# Terminal 1 — Backend (port 5000)
+cd backend && python app.py
 
-# 2. إضافة كافة الملفات النظيفة
-git add .
-
-# 3. حفظ الـ Commit الأول
-git commit -m "Initial commit: SmartCinema clean release"
-
-# 4. تغيير اسم الفرع إلى main
-git branch -M main
-
-# 5. ربط المستودع بحسابك على GitHub (استبدل الرابط برابط مستودعك الجديد)
-git remote add origin https://github.com/YOUR_USERNAME/smartcinema.git
-
-# 6. رفع الكود
-git push -u origin main
+# Terminal 2 — Frontend (port 8080)
+cd frontend && npm run dev
 ```
 
----
-
-## 🌐 خيارات الاستضافة والنشر (Hosting & Deployment)
-
-### الخيار 1: رفع الواجهة الأمامية (Frontend) على Vercel أو Netlify
-1. قم بإنشاء حساب على [Vercel](https://vercel.com) أو [Netlify](https://netlify.com).
-2. اربط حسابك بـ GitHub واختر مستودع `smartcinema`.
-3. اضبط إعدادات المشروع كالتالي:
-   - **Root Directory:** `frontend`
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-4. في **Environment Variables**، أضف المتغير:
-   - `VITE_API_URL`: ضع رابط السيرفر المرفوع (مثلاً: `https://my-cinema-backend.onrender.com`).
-5. اضغط **Deploy**.
-
-> **ملاحظة:** يتوفر أيضاً مجلد `frontend/dist` المبني مسبقاً، يمكنك سحبه وإفلاته مباشرة في Netlify Drop للاستضافة الفورية بدون بناء!
+Open `http://localhost:8080` in your browser.
 
 ---
 
-### الخيار 2: رفع السيرفر (Backend) على Render أو Railway أو VPS
-1. **استخدام Render / Railway:**
-   - اربط المستودع واختر مجلد `backend`.
-   - حدد الـ Build Command: `pip install -r requirements.txt`
-   - حدد الـ Start Command: `python app.py`
-   - أو اختر خيار النشر عبر **Dockerfile** الجاهز في مجلد `backend`.
-2. **استخدام سيرفر خاص (VPS / Ubuntu):**
-   - ثبت Docker و Docker Compose.
-   - شغل الأمر: `docker compose up -d`
+## Deployment
+
+### Frontend → Vercel / Netlify
+| Setting | Value |
+|---------|-------|
+| Root Directory | `frontend` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Environment | `VITE_API_URL` = your backend URL |
+
+### Backend → Render / Railway / VPS
+A `Dockerfile` is included. Or use `docker-compose.yml` at the project root:
+```bash
+docker compose up -d
+```
+
+### Home Server (Recommended)
+Since media files live on your drives, run the backend locally and expose it through [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) for secure remote access. Host the frontend on Vercel for fast loading anywhere.
 
 ---
 
-### الخيار 3: تشغيل السيرفر من جهازك الشخصي وربطه بالإنترنت (Recommended for Home Media)
-نظراً لأن الأفلام والمسلسلات تشغل مئات الجيجابايت على قرصك الصلب:
-1. شغل السيرفر على جهازك في المنزل.
-2. استخدم أداة مثل **Cloudflare Tunnel** لتوفير رابط ويب مجاني وآمن (مثال: `https://cinema.yourdomain.com`).
-3. اربط واجهة الـ Frontend (المرفوعة على Vercel) برابط السيرفر هذا للاستمتاع بالمشاهدة من أي جهاز في العالم!
+## Environment Variables
+
+Copy `.env.example` → `.env` in both `frontend/` and `backend/`.
+
+| Variable | Where | Purpose |
+|----------|-------|---------|
+| `VITE_API_URL` | Frontend | Backend URL (empty = use Vite proxy in dev) |
+| `PORT` | Backend | Server port (default: 5000) |
+| `TMDB_API_KEY` | Backend | TMDb metadata & posters (optional) |
+| `OLLAMA_HOST` | Backend | Local AI endpoint (default: localhost:11434) |
 
 ---
 
-## ⚙️ متغيرات البيئة (Environment Variables)
+## Project Structure
 
-### Frontend (`frontend/.env`)
-| المتغير | الوصف | القيمة الافتراضية |
-|---|---|---|
-| `VITE_API_URL` | رابط الـ Backend في بيئة الإنتاج | فارغ (يعتمد على الـ Proxy محلياً) |
-
-### Backend (`backend/.env`)
-| المتغير | الوصف | القيمة الافتراضية |
-|---|---|---|
-| `PORT` | منفذ السيرفر | `5000` |
-| `SECRET_KEY` | مفتاح تشفير الجلسات | قيمة افتراضية للتطوير |
-| `TMDB_API_KEY` | مفتاح TMDb لجلب ملصقات وتفاصيل الأفلام | اختياري |
-| `OLLAMA_HOST` | رابط خادم Ollama للذكاء الاصطناعي | `http://localhost:11434` |
-| `CORS_ORIGINS` | النطاقات المسموح لها بالاتصال | `*` |
+```
+├── frontend/          React app (pages, components, hooks, lib)
+│   ├── src/
+│   │   ├── pages/     Index, Movies, Series, Details, Player, Admin, ...
+│   │   ├── components/  VideoPlayer, MediaCard, HeroSection, AiChat, ...
+│   │   └── lib/       API client, logger, utilities
+│   └── dist/          Production build (pre-built)
+│
+├── backend/           Flask API server
+│   ├── app.py         Main application & route registration
+│   ├── scanner.py     Media scanner engine
+│   ├── database.py    SQLite schema & queries
+│   ├── ai_service.py  Hybrid AI engine
+│   ├── hls_transcoder.py  Adaptive streaming
+│   └── tests/         Unit tests (39 tests)
+│
+├── docker-compose.yml
+├── start.cmd          Windows launcher
+└── start.sh           Linux/Mac launcher
+```
