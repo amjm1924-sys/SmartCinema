@@ -30,7 +30,7 @@ It's not just a media player. It's a full media management stack with built-in A
 
 ### Media Library & Scanner
 - Automatic folder scanning with smart detection — distinguishes movies from TV series by analyzing folder structures, filenames, and TMDb lookups.
-- Arabic filename support with ordinal translation (الموسم الأول → Season 1).
+- Arabic filename support with ordinal translation (e.g. "Al-Mawsim Al-Awal" → Season 1).
 - Aggressive tag cleaning — strips tracker watermarks, release group tags, quality strings, and piracy site branding from titles automatically.
 - Orphan adoption — when files move between drives or get renamed, the scanner reconnects them without losing your watch history, ratings, or favorites.
 - Broken link pruning and ghost series cleanup.
@@ -56,7 +56,7 @@ The player is a standalone feature in itself:
 SmartCinema ships with a hybrid AI stack that works both offline and online:
 - **Local-first**: Connects to a local Ollama instance (Llama 3.2, Qwen 2.5, Mistral, etc.) for zero-cost, zero-latency, fully private AI.
 - **Cloud failover**: Automatically rotates through Gemini, Groq, OpenRouter, Together AI, and HuggingFace when Ollama isn't available, with health monitoring and dead-key detection.
-- **CineMind chatbot** — a conversational assistant that understands your library. Ask it things like "أفلام رعب في الغابات من التسعينات" and it returns matching titles with posters and availability badges.
+- **CineMind chatbot** — a conversational assistant that understands your library. Ask it things like "horror movies set in forests from the 90s" and it returns matching titles with posters and availability badges.
 - **Natural language search** — converts plain Arabic or English queries into structured filters.
 - **AI recommendations** — hybrid TF-IDF cosine similarity on local metadata + TMDb global suggestions.
 - **Catchup summaries** — spoiler-free recaps of where you left off in a series.
